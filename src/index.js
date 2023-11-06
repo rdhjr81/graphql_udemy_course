@@ -6,6 +6,7 @@ const typeDefinitions = `
         users (query: String): [User!]!
         posts(query: String): [Post!]!
         me: User!
+        comments: [Comment!]!
     }
 
     type User {
@@ -22,6 +23,11 @@ const typeDefinitions = `
         body: String!
         published: Boolean!
         author: User!
+    }
+
+    type Comment {
+        id: ID!
+        text: String!
     }
 `
 const users = [
@@ -68,6 +74,26 @@ const posts = [
     }
 ]
 
+const comments = [
+    {
+        id: 'c1',
+        text: 'garbage through and through!'
+    },
+    {
+        id: 'c2',
+        text: 'delightfully unoriginal'
+    },
+    {
+        id: 'c3',
+        text: 'read like a book should'
+    },
+    {
+        id: 'c4',
+        text: 'they didnt pay me enough to finish it!'
+    },
+
+]
+
 //resolvers 
 const resolvers = {
     Query: {
@@ -102,6 +128,9 @@ const resolvers = {
                 email: 'rob@rob.com',
                 age:42
             };
+        },
+        comments(){
+            return comments;
         }
     },
     Post:{
