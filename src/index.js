@@ -12,7 +12,8 @@ const typeDefinitions = `
         id: ID!
         name: String!
         email: String!
-        age: Int
+        age: Int,
+        posts: [Post!]!
     }
 
     type Post {
@@ -20,23 +21,24 @@ const typeDefinitions = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
     }
 `
 const users = [
     {
-        id: '1234567',
+        id: '1',
         name: 'Rob',
         email: 'rob@rob.com',
         age:42
     },
     {
-        id: '222333',
+        id: '2',
         name: 'Joe',
         email: 'joe@aol.com',
         age:24
     },
     {
-        id: '1234567',
+        id: '3',
         name: 'Donald',
         email: 'don@ron.com'
     }
@@ -47,19 +49,22 @@ const posts = [
         id: '11111',
         title: 'my post title',
         body: 'I love writing blogs',
-        published: true
+        published: true,
+        author: '1'
     },
     {
         id: '1221',
         title: '2 post 2 title',
         body: 'I 2 love  2 writing blogs',
-        published: false
+        published: false,
+        author: '1'
     },
     {
         id: '132321',
         title: '3 3 2 3',
         body: '3 2 love  2 wri3ting b3ogs',
-        published: true
+        published: true,
+        author: '2'
     }
 ]
 
@@ -97,6 +102,17 @@ const resolvers = {
                 email: 'rob@rob.com',
                 age:42
             };
+        }
+    },
+    Post:{
+        author(parent, args, ctx, info){
+            const user = users.find(u => u.id === parent.author);
+            return user;
+        }
+    }, 
+    User:{
+        posts (parent, args, ctx, info) {
+            return posts.filter(p => p.author === parent.id);
         }
     }
 }
