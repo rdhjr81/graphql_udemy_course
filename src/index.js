@@ -12,6 +12,8 @@ const typeDefinitions = `
 
     type Mutation{
         createUser(name: String!, email: String!, age: Int):User!
+        createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
+        createComment(text: String!, author: ID!, post: ID!): Comment!
     }
 
     type User {
@@ -168,6 +170,47 @@ const resolvers = {
             users.push(newUser);
 
             return newUser;
+        },
+        createPost(parent, args, ctx, info){
+            const authorExists = users.some(u => u.id === args.author);
+            if(authorExists){
+                const post =  {
+                    id: uuidv4(),
+                    title: args.title,
+                    body: args.body,
+                    published: args.published,
+                    author: args.author
+                }
+                posts.push(post);
+                return post;
+            }else{
+                throw new Error(`user id ${args.author} does not exist`)
+            }
+        },
+        createComment(parent, args, ctx, info){
+            const postExists = posts.some(p => p.id == args.post);
+
+            if(postExists){
+                const authorExists = users.some(u => u.id === args.author);
+                if(authorExists){
+
+                    const comment =  {
+                        id: uuidv4(),
+                        text: args.text,
+                        post: args.post,
+                        author: args.author
+                    }
+
+                    comments.push(comment);
+
+                    return comment;
+                }else{
+                    throw new Error(`user with id ${args.author} does not exist`);
+                }
+            }
+            else{
+                throw new Error(`post with id ${args.post} does not exist`);
+            }
         }
     },
     Post:{
