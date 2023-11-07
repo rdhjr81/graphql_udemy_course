@@ -24,12 +24,14 @@ const typeDefinitions = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment!]!
     }
 
     type Comment {
         id: ID!
         text: String!
         author: User!
+        post: Post!
     }
 `
 const users = [
@@ -54,21 +56,21 @@ const users = [
 
 const posts = [
     {
-        id: '11111',
+        id: '1',
         title: 'my post title',
         body: 'I love writing blogs',
         published: true,
         author: '1'
     },
     {
-        id: '1221',
+        id: '2',
         title: '2 post 2 title',
         body: 'I 2 love  2 writing blogs',
         published: false,
         author: '1'
     },
     {
-        id: '132321',
+        id: '3',
         title: '3 3 2 3',
         body: '3 2 love  2 wri3ting b3ogs',
         published: true,
@@ -80,22 +82,26 @@ const comments = [
     {
         id: 'c1',
         text: 'garbage through and through!',
-        author: '2'
+        author: '2',
+        post: '1'
     },
     {
         id: 'c2',
         text: 'delightfully unoriginal',
-        author: '2'
+        author: '2',
+        post: '1'
     },
     {
         id: 'c3',
         text: 'read like a book should',
-        author: '1'
+        author: '1',
+        post: '2'
     },
     {
         id: 'c4',
         text: 'they didnt pay me enough to finish it!',
-        author: '3'
+        author: '3',
+        post: '3'
     },
 
 ]
@@ -143,6 +149,10 @@ const resolvers = {
         author(parent, args, ctx, info){
             const user = users.find(u => u.id === parent.author);
             return user;
+        },
+        comments(parent, args, ctx, info){
+            const postComments = comments.filter(c => c.post === parent.id);
+            return postComments;
         }
     }, 
     User:{
@@ -156,6 +166,10 @@ const resolvers = {
     Comment:{
         author(parent, args, ctx, info){
             return users.find(u => u.id === parent.author)
+        },
+        post(parent, args, ctx, info){
+            const _post = posts.find(p => p.id = parent.post);
+            return _post
         }
     }
 }
