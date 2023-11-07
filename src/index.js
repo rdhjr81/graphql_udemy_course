@@ -1,4 +1,5 @@
 import { GraphQLServer } from "graphql-yoga";
+import {v4 as uuidv4} from 'uuid';
 
 //type definitions 
 const typeDefinitions = `
@@ -7,6 +8,10 @@ const typeDefinitions = `
         posts(query: String): [Post!]!
         me: User!
         comments: [Comment!]!
+    }
+
+    type Mutation{
+        createUser(name: String!, email: String!, age: Int):User!
     }
 
     type User {
@@ -143,6 +148,26 @@ const resolvers = {
         },
         comments(){
             return comments;
+        }
+    },
+    Mutation:{
+        createUser(parent, args, ctx, info){
+            const emailTaken = users.some(u => u.email === args.email);
+
+            if(emailTaken){
+                throw new Error('email taken')
+            }
+
+            const newUser = {
+                id: uuidv4(),
+                name : args.name,
+                email: args.email,
+                age: args.age
+            }
+
+            users.push(newUser);
+
+            return newUser;
         }
     },
     Post:{
