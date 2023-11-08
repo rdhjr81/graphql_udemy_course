@@ -161,10 +161,8 @@ const resolvers = {
             }
 
             const newUser = {
+                ...args,
                 id: uuidv4(),
-                name : args.name,
-                email: args.email,
-                age: args.age
             }
 
             users.push(newUser);
@@ -175,11 +173,8 @@ const resolvers = {
             const authorExists = users.some(u => u.id === args.author);
             if(authorExists){
                 const post =  {
-                    id: uuidv4(),
-                    title: args.title,
-                    body: args.body,
-                    published: args.published,
-                    author: args.author
+                    ...args,
+                        id: uuidv4(),
                 }
                 posts.push(post);
                 return post;
@@ -195,10 +190,8 @@ const resolvers = {
                 if(authorExists){
 
                     const comment =  {
+                        ...args,
                         id: uuidv4(),
-                        text: args.text,
-                        post: args.post,
-                        author: args.author
                     }
 
                     comments.push(comment);
