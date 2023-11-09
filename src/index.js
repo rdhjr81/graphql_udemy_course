@@ -11,15 +11,29 @@ const typeDefinitions = `
     }
 
     type Mutation{
-        createUser(data: CreateUserInput):User!
-        createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
-        createComment(text: String!, author: ID!, post: ID!): Comment!
+        createUser(data: CreateUserInput!):User!
+        deleteUser(id: ID!) : User!
+        createPost(data: CreatePostInput!): Post!
+        createComment(data: CreateCommentInput!): Comment!
     }
 
     input CreateUserInput{
         name: String!, 
         email: String!, 
         age: Int
+    }
+
+    input CreatePostInput {
+        title: String!, 
+        body: String!, 
+        published: Boolean!, 
+        author: ID!
+    }
+
+    input CreateCommentInput{
+        text: String!, 
+        author: ID!, 
+        post: ID!
     }
 
     type User {
@@ -47,7 +61,7 @@ const typeDefinitions = `
         post: Post!
     }
 `
-const users = [
+let users = [
     {
         id: '1',
         name: 'Rob',
@@ -67,7 +81,7 @@ const users = [
     }
 ];
 
-const posts = [
+let posts = [
     {
         id: '1',
         title: 'my post title',
@@ -91,7 +105,7 @@ const posts = [
     }
 ]
 
-const comments = [
+let comments = [
     {
         id: 'c1',
         text: 'garbage through and through!',
@@ -175,11 +189,25 @@ const resolvers = {
 
             return newUser;
         },
+        deleteUser(parent, args, ctx, info){
+            const indexOf = users.findIndex(u => u.id === args.id);
+            if(indexOf < 0){
+                throw new Error(`user id ${args.id} does not exist`)
+            }
+            else{
+                const deletedUsers = users.splice(indexOf, 1);
+
+                comments = comments.filter(c => c.author !== args.id);
+                posts = posts.filter(p => p.author !== args.id);
+                
+                return deletedUsers[0];
+            }
+        },
         createPost(parent, args, ctx, info){
-            const authorExists = users.some(u => u.id === args.author);
+            const authorExists = users.some(u => u.id === args.data.author);
             if(authorExists){
                 const post =  {
-                    ...args,
+                    ...args.data,
                         id: uuidv4(),
                 }
                 posts.push(post);
@@ -189,14 +217,14 @@ const resolvers = {
             }
         },
         createComment(parent, args, ctx, info){
-            const postExists = posts.some(p => p.id == args.post);
-
+            const postExists = posts.some(p => p.id == args.data.post);
+``
             if(postExists){
-                const authorExists = users.some(u => u.id === args.author);
+                const authorExists = users.some(u => u.id === args.data.author);
                 if(authorExists){
 
                     const comment =  {
-                        ...args,
+                        ...args.data,
                         id: uuidv4(),
                     }
 
