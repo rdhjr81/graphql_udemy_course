@@ -14,6 +14,7 @@ const typeDefinitions = `
         createUser(data: CreateUserInput!):User!
         deleteUser(id: ID!) : User!
         createPost(data: CreatePostInput!): Post!
+        deletePost(id: ID!): Post!
         createComment(data: CreateCommentInput!): Comment!
     }
 
@@ -217,6 +218,15 @@ const resolvers = {
             }else{
                 throw new Error(`user id ${args.author} does not exist`)
             }
+        },
+        deletePost(parent, args, ctx, info){
+            comments = comments.filter(c => c.ppst !== args.id);
+            
+            const deletedPost = posts.find(p => p.id === args.id);
+
+            posts = posts.filter(p => p.id !== args.id);
+
+            return deletedPost;
         },
         createComment(parent, args, ctx, info){
             const postExists = posts.some(p => p.id == args.data.post);
