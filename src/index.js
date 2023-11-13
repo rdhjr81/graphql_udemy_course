@@ -148,7 +148,7 @@ const resolvers = {
                 })
             }
             return users;
-        }, 
+        },  
         posts(parent, args, ctx, info){
             
             if(args.query){
@@ -214,19 +214,23 @@ const resolvers = {
                         id: uuidv4(),
                 }
                 posts.push(post);
-                return post;
+                return post; 
             }else{
                 throw new Error(`user id ${args.author} does not exist`)
             }
         },
         deletePost(parent, args, ctx, info){
-            comments = comments.filter(c => c.ppst !== args.id);
-            
-            const deletedPost = posts.find(p => p.id === args.id);
+            const indexOf = posts.findIndex(p => p.id === args.id);
 
-            posts = posts.filter(p => p.id !== args.id);
+            if(indexOf < 0){
+                throw new Error(`post id ${args.id} does not exist`);
+            }
 
-            return deletedPost;
+            comments = comments.filter(c => c.post !== args.id);
+
+            const deletedPost = posts.splice(indexOf, 1);
+
+            return deletedPost[0];
         },
         createComment(parent, args, ctx, info){
             const postExists = posts.some(p => p.id == args.data.post);
@@ -235,7 +239,7 @@ const resolvers = {
                 const authorExists = users.some(u => u.id === args.data.author);
                 if(authorExists){
 
-                    const comment =  {
+                    const comment =  {  
                         ...args.data,
                         id: uuidv4(),
                     }
