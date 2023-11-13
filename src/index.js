@@ -16,6 +16,7 @@ const typeDefinitions = `
         createPost(data: CreatePostInput!): Post!
         deletePost(id: ID!): Post!
         createComment(data: CreateCommentInput!): Comment!
+        deleteComment(id:ID!): Comment!
     }
 
     input CreateUserInput{
@@ -108,7 +109,7 @@ let posts = [
 
 let comments = [
     {
-        id: 'c1',
+        id: '1',
         text: 'garbage through and through!',
         author: '2',
         post: '1'
@@ -254,6 +255,16 @@ const resolvers = {
             else{
                 throw new Error(`post with id ${args.post} does not exist`);
             }
+        },
+        deleteComment(parent, args, ctx, info){
+            const indexOf = comments.findIndex(c => c.id === args.id);
+
+            if(indexOf < 0){
+                throw new Error(`comment with id ${args.id} does not exist`);
+            }
+
+            const deletedComments = comments.splice(indexOf,1);
+            return deletedComments[0];
         }
     },
     Post:{
