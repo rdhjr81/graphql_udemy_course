@@ -75,7 +75,7 @@ let users = [
         age:24
     },
     {
-        id: '3',
+        id: '3', 
         name: 'Donald',
         email: 'don@ron.com'
     }
@@ -197,9 +197,11 @@ const resolvers = {
             else{
                 const deletedUsers = users.splice(indexOf, 1);
 
-                comments = comments.filter(c => c.author !== args.id);
+                let userPosts = posts.filter(p => p.author === args.id);
                 posts = posts.filter(p => p.author !== args.id);
-                
+
+                comments = comments.filter(c => c.author !== args.id || !(userPosts.find(p => p.id === c.post)));
+                console.log(comments);
                 return deletedUsers[0];
             }
         },
